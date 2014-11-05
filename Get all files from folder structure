@@ -1,0 +1,40 @@
+###CREATE FILE PATHS TO ALL FILES (3 LEVELS DOWN)
+file_path="//apt.jollamobile.com@SSL/dav/Operations/2 Supply Chain Management (SCM)/IMEIS 2014 B2B & internal"
+
+folders1=list.files(file_path)
+folders1=folders1[-c(1, 13)]
+output=vector()
+
+for(i in 1:length(folders1)){
+month_path=paste(file_path, "/", folders1[i], sep="")
+month_folder=list.files(month_path)
+month_folder=paste(month_path, "/", month_folder, sep="")
+output=append(output, month_folder)
+}
+
+folders2=output
+output=vector()
+
+for(i in 1:length(folders2)){
+month_folder=list.files(folders2[i])
+
+if(length(month_folder)>0){
+month_folder=paste(folders2[i], "/", month_folder, sep="")
+output=append(output, month_folder)
+}
+}
+folders3=output
+folders3=folders3[-which(grepl("~", folders3))]
+
+###PRINT THE DIMENSIONS OF ALL FILES
+errors=vector()
+for(i in 1:length(folders3)){
+errortest=tryCatch(
+xlsxToR(folders3[i], header=T),
+error=function(e) e
+)
+if(!inherits(errortest, "error")){
+temp=xlsxToR(folders3[i], header=T)
+print(dim(temp))
+} else {errors=append(i, errors)}
+}
